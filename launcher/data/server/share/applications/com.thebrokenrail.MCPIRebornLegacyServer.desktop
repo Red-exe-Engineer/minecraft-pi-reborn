@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Minecraft: Pi Edition: Reborn Legacy (Server)
+Comment=Fun with Blocks
+Icon=com.thebrokenrail.MCPIRebornLegacyServer
+Exec=minecraft-pi-reborn-legacy-server
+Terminal=true
+Type=Application
+Categories=Game;
+NoDisplay=true

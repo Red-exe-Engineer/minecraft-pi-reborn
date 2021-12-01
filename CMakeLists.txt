@@ -30,7 +30,7 @@ endif()
 include(cmake/util.cmake)
 
 # Specify Variant Name
-set(MCPI_VARIANT_NAME "minecraft-pi-reborn")
+set(MCPI_VARIANT_NAME "minecraft-pi-reborn-legacy")
 if(MCPI_SERVER_MODE)
     set(MCPI_VARIANT_NAME "${MCPI_VARIANT_NAME}-server")
 else()

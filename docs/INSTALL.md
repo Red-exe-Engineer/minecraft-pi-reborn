@@ -1,11 +1,11 @@
 # Manual Installation
-[Download Packages Here](https://jenkins.thebrokenrail.com/job/minecraft-pi-reborn/job/master/lastSuccessfulBuild/artifact/out/)
+[Download Packages Here](https://jenkins.thebrokenrail.com/job/minecraft-pi-reborn/job/legacy/lastSuccessfulBuild/artifact/out/)
 
 ## Picking A Package
 
 ### Name Format
 ```
-minecraft-pi-reborn-<Variant>_X.Y.Z_<Architecture>
+minecraft-pi-reborn-legacy-<Variant>_X.Y.Z_<Architecture>
 ```
 
 ### Picking A Variant

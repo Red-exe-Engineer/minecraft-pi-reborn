@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-    <id>com.thebrokenrail.MCPIRebornClient</id>
-    <name>Minecraft: Pi Edition: Reborn (Client)</name>
+    <id>com.thebrokenrail.MCPIRebornLegacyServer</id>
+    <name>Minecraft: Pi Edition: Reborn Legacy (Server)</name>
     <metadata_license>CC0-1.0</metadata_license>
     <summary>Fun with Blocks</summary>
     <description><p>Minecraft: Pi Edition Modding Project.</p><p>NOTE: This is not verified by, affiliated with, or supported by Mojang or Microsoft.</p></description>
-    <url type="homepage">https://gitea.thebrokenrail.com/TheBrokenRail/minecraft-pi-reborn</url>
-    <screenshots>
-        <screenshot type="default">
-            <image>https://gitea.thebrokenrail.com/TheBrokenRail/minecraft-pi-reborn/raw/branch/master/images/start.png</image>
-        </screenshot>
-    </screenshots>
-    <launchable type="desktop-id">com.thebrokenrail.MCPIRebornClient.desktop</launchable>
+    <url type="homepage">https://gitea.thebrokenrail.com/TheBrokenRail/minecraft-pi-reborn/src/branch/legacy</url>
+    <launchable type="desktop-id">com.thebrokenrail.MCPIRebornLegacyServer.desktop</launchable>
     <provides>
-        <id>com.thebrokenrail.MCPIRebornClient.desktop</id>
+        <id>com.thebrokenrail.MCPIRebornLegacyServer.desktop</id>
     </provides>
     <project_license>LicenseRef-proprietary</project_license>
     <developer_name>TheBrokenRail &amp; Mojang AB</developer_name>

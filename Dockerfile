@@ -9,7 +9,7 @@ RUN \
 
 # Copy AppImage
 RUN mkdir /app
-ADD ./out/minecraft-pi-reborn-server-*-amd64.AppImage /app
+ADD ./out/minecraft-pi-reborn-legacy-server-*-amd64.AppImage /app
 
 # Extract AppImage
 WORKDIR /app

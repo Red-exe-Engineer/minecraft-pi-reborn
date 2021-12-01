@@ -15,4 +15,4 @@ mkdir -p build/test
 
 # Run Test
 cd build/test
-minecraft-pi-reborn-server --only-generate
+minecraft-pi-reborn-legacy-server --only-generate

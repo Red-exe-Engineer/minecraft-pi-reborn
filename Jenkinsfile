@@ -22,11 +22,11 @@ pipeline {
                 stage('Publish') {
                     steps {
                         sh 'apt-get update && apt-get install -y docker.io'
-                        sh 'docker build --no-cache --tag thebrokenrail/minecraft-pi-reborn-server .'
+                        sh 'docker build --no-cache --tag thebrokenrail/minecraft-pi-reborn-legacy-server .'
                         withCredentials([usernamePassword(credentialsId: 'docker_hub_login', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
                             sh 'docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_PASSWORD}"'
                         }
-                        sh 'docker push thebrokenrail/minecraft-pi-reborn-server'
+                        sh 'docker push thebrokenrail/minecraft-pi-reborn-legacy-server'
                     }
                 }
             }

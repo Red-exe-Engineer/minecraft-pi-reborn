@@ -8,9 +8,9 @@ const mode = process.argv[2];
 const arch = process.argv[3];
 
 // Data
-const id = `com.thebrokenrail.MCPIReborn${mode === 'server' ? 'Server' : 'Client'}`;
-const name = `minecraft-pi-reborn-${mode}`;
-const updateURL = `https://jenkins.thebrokenrail.com/job/minecraft-pi-reborn/job/master/lastSuccessfulBuild/artifact/out/${name}-latest-${arch}.AppImage.zsync`;
+const id = `com.thebrokenrail.MCPIRebornLegacy${mode === 'server' ? 'Server' : 'Client'}`;
+const name = `minecraft-pi-reborn-legacy-${mode}`;
+const updateURL = `https://jenkins.thebrokenrail.com/job/minecraft-pi-reborn/job/legacy/lastSuccessfulBuild/artifact/out/${name}-latest-${arch}.AppImage.zsync`;
 
 // APT Data
 const apt_distribution = 'bullseye';

@@ -12,21 +12,21 @@ if(BUILD_NATIVE_COMPONENTS)
     # Install
     install(TARGETS launcher DESTINATION "${MCPI_INSTALL_DIR}")
     install_symlink("../${MCPI_INSTALL_DIR}/launcher" "bin/${MCPI_VARIANT_NAME}")
-    set(ICON_PATH "data/com.thebrokenrail.MCPIReborn.png")
+    set(ICON_PATH "data/com.thebrokenrail.MCPIRebornLegacy.png")
     set(ICON_TARGET_PATH "share/icons/hicolor/scalable/apps")
     if(NOT MCPI_SERVER_MODE)
         install(DIRECTORY "data/client/" DESTINATION ".")
         install(
             FILES "${ICON_PATH}"
             DESTINATION "${ICON_TARGET_PATH}"
-            RENAME "com.thebrokenrail.MCPIRebornClient.png"
+            RENAME "com.thebrokenrail.MCPIRebornLegacyClient.png"
         )
     else()
         install(DIRECTORY "data/server/" DESTINATION ".")
         install(
             FILES "${ICON_PATH}"
             DESTINATION "${ICON_TARGET_PATH}"
-            RENAME "com.thebrokenrail.MCPIRebornServer.png"
+            RENAME "com.thebrokenrail.MCPIRebornLegacyServer.png"
         )
     endif()
 endif()

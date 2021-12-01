@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Minecraft: Pi Edition: Reborn Legacy (Client)
+Comment=Fun with Blocks
+Icon=com.thebrokenrail.MCPIRebornLegacyClient
+StartupNotify=false
+StartupWMClass=Minecraft: Pi Edition: Reborn Legacy
+Exec=minecraft-pi-reborn-legacy-client
+Terminal=false
+Type=Application
+Categories=Game;
