@@ -22,6 +22,7 @@ static int32_t Inventory_setupDefault_FillingContainer_addItem_call_injection(un
     int32_t ret = (*FillingContainer_addItem)(filling_container, item_instance);
 
     // Add Items
+    inventory_add_item(filling_container, *Item_sign, false);
     inventory_add_item(filling_container, *Item_flintAndSteel, false);
     inventory_add_item(filling_container, *Item_snowball, false);
     inventory_add_item(filling_container, *Item_egg, false);
