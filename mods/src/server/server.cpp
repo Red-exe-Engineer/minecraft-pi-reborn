@@ -54,6 +54,7 @@ static ServerProperties &get_server_properties() {
 #define DEFAULT_PORT "19132"
 #define DEFAULT_SEED ""
 #define DEFAULT_FORCE_MOB_SPAWNING "false"
+#define DEFAULT_PEACEFUL_MODE "false"
 #define DEFAULT_WORLD_NAME "world"
 #define DEFAULT_MAX_PLAYERS "4"
 #define DEFAULT_WHITELIST "false"
@@ -87,6 +88,7 @@ static void start_world(unsigned char *minecraft) {
         // Open Port
         int port = get_server_properties().get_int("port", DEFAULT_PORT);
         INFO("Listening On: %i", port);
+        patch_address((void *) 0x16cd8, (void *) port);
         (*Minecraft_hostMultiplayer)(minecraft, port);
     }
 
@@ -262,6 +264,15 @@ __attribute__((destructor)) static void _free_stdin_buffer() {
         stdin_buffer = NULL;
     }
 }
+// Prevent STDIN From Being Closed
+HOOK(close, int, (int fd)) {
+    if (fd != fileno(stdin)) {
+        ensure_close();
+        return (*real_close)(fd);
+    } else {
+        return 0;
+    }
+}
 
 // Handle Commands
 static void handle_commands(unsigned char *minecraft) {
@@ -417,6 +428,9 @@ static const char *get_features() {
         loaded_features = true;
 
         features.clear();
+        if (get_server_properties().get_bool("peaceful-mode", DEFAULT_PEACEFUL_MODE)) {
+            features += "Peaceful Mode|";
+        }
         if (get_server_properties().get_bool("force-mob-spawning", DEFAULT_FORCE_MOB_SPAWNING)) {
             features += "Force Mob Spawning|";
         }
@@ -461,6 +475,8 @@ static void server_init() {
         properties_file_output << "seed=" DEFAULT_SEED "\n";
         properties_file_output << "# Force Mob Spawning (false = Disabled, true = Enabled)\n";
         properties_file_output << "force-mob-spawning=" DEFAULT_FORCE_MOB_SPAWNING "\n";
+        properties_file_output << "# Peaceful Mode (false = Disabled, true = Enabled)\n";
+        properties_file_output << "peaceful-mode=" DEFAULT_PEACEFUL_MODE "\n";
         properties_file_output << "# World To Select\n";
         properties_file_output << "world-name=" DEFAULT_WORLD_NAME "\n";
         properties_file_output << "# Maximum Player Count\n";
@@ -498,23 +514,23 @@ static void server_init() {
 
     // Prevent Main Player From Loading
     unsigned char player_patch[4] = {0x00, 0x20, 0xa0, 0xe3}; // "mov r2, #0x0"
-    patch((void *) 0x1685c, player_patch);
+    patch((void *) 0x16ef8, player_patch);
     // Start World On Launch
     misc_run_on_update(Minecraft_update_injection);
     // Set Max Players
     unsigned char max_players_patch[4] = {get_max_players(), 0x30, 0xa0, 0xe3}; // "mov r3, #MAX_PLAYERS"
-    patch((void *) 0x166d0, max_players_patch);
+    patch((void *) 0x16cc0, max_players_patch);
     // Custom Banned IP List
     overwrite((void *) RakNet_RakPeer_IsBanned, (void *) RakNet_RakPeer_IsBanned_injection);
 
     // Show The MineCon Icon Next To MOTD In Server List
     if (get_server_properties().get_bool("show-minecon-badge", DEFAULT_SHOW_MINECON_BADGE)) {
-        unsigned char minecon_badge_patch[4] = {0x04, 0x1a, 0x9f, 0xe5}; // "ldr r1, [0x741f0]"
-        patch((void *) 0x737e4, minecon_badge_patch);
+        unsigned char minecon_badge_patch[4] = {0x5c, 0x1a, 0x9f, 0xe5}; // "ldr r1, [0x98af0]"
+        patch((void *) 0x9808c, minecon_badge_patch);
     }
 
     // Log IPs
-    overwrite_call((void *) 0x75e54, (void *) ServerSideNetworkHandler_onReady_ClientGeneration_ServerSideNetworkHandler_popPendingPlayer_injection);
+    overwrite_call((void *) 0x9a63c, (void *) ServerSideNetworkHandler_onReady_ClientGeneration_ServerSideNetworkHandler_popPendingPlayer_injection);
 
     // Start Reading STDIN
     pthread_t read_stdin_thread_obj;

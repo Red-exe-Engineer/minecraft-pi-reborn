@@ -24,11 +24,9 @@ __attribute__((destructor)) static void _free_home() {
 // Init
 void init_home() {
     // Store Data In ~/.minecraft-pi Instead Of ~/.minecraft
-    patch_address((void *) default_path, (void *) HOME_SUBDIRECTORY_FOR_GAME_DATA);
+    patch_address((void *) full_data_path, (void *) home_get());
 
-    // Change Directory To Binary Directory Manually
-    unsigned char nop_patch[4] = {0x00, 0xf0, 0x20, 0xe3}; // "nop"
-    patch((void *) 0xe0ac, nop_patch);
+    // Change Directory To Binary Directory
     char *binary_directory = get_mcpi_directory();
     if (chdir(binary_directory) != 0) {
         ERR("Unable To Change Directory: %s", strerror(errno));

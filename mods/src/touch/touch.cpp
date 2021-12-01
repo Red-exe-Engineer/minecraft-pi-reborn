@@ -24,17 +24,17 @@ void init_touch() {
 
         // Force Correct Toolbar Size
         unsigned char toolbar_patch[4] = {0x01, 0x00, 0x50, 0xe3}; // "cmp r0, #0x1"
-        patch((void *) 0x257b0, toolbar_patch);
+        patch((void *) 0x2a6cc, toolbar_patch);
     }
 
     // Show Block Outlines
     int block_outlines = feature_has("Show Block Outlines", 0);
     unsigned char outline_patch[4] = {(unsigned char) (block_outlines ? !touch_gui : touch_gui), 0x00, 0x50, 0xe3}; // "cmp r0, #0x1" or "cmp r0, #0x0"
-    patch((void *) 0x4a210, outline_patch);
+    patch((void *) 0x6183c, outline_patch);
 
     // Force Touch Inventory
     if (feature_has("Force Touch Inventory", server_disabled)) {
-        overwrite_call((void *) 0x2943c, (void *) operator_new_IngameBlockSelectionScreen_injection);
-        overwrite_call((void *) 0x29444, (void *) Touch_IngameBlockSelectionScreen);
+        overwrite_call((void *) 0x2f628, (void *) operator_new_IngameBlockSelectionScreen_injection);
+        overwrite_call((void *) 0x2f630, (void *) Touch_IngameBlockSelectionScreen);
     }
 }

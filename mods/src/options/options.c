@@ -5,7 +5,6 @@
 
 #include "../feature/feature.h"
 #include "../init/init.h"
-#include "options.h"
 
 // Force Mob Spawning
 static bool LevelData_getSpawnMobs_injection(__attribute__((unused)) unsigned char *level_data) {
@@ -42,36 +41,32 @@ static char *get_username() {
     return username;
 }
 
+static int fancy_graphics;
+static int peaceful_mode;
 static int anaglyph;
+static int smooth_lighting;
 static int render_distance;
+static int server_visible;
 // Configure Options
-unsigned char *stored_options = NULL;
-static void Options_initDefaultValue_injection(unsigned char *options) {
+static void Minecraft_init_injection(unsigned char *this) {
     // Call Original Method
-    (*Options_initDefaultValue)(options);
+    (*Minecraft_init)(this);
 
+    unsigned char *options = this + Minecraft_options_property_offset;
+    // Enable Fancy Graphics
+    *(options + Options_fancy_graphics_property_offset) = fancy_graphics;
     // Enable Crosshair In Touch GUI
     *(options + Options_split_controls_property_offset) = 1;
+    // Peaceful Mode
+    *(int32_t *) (options + Options_game_difficulty_property_offset) = peaceful_mode ? 0 : 2;
     // 3D Anaglyph
     *(options + Options_3d_anaglyph_property_offset) = anaglyph;
+    // Smooth Lighting
+    *(options + Options_ambient_occlusion_property_offset) = smooth_lighting;
     // Render Distance
     *(int32_t *) (options + Options_render_distance_property_offset) = render_distance;
-
-    // Default Graphics Settings
-    *(options + Options_fancy_graphics_property_offset) = 1;
-    *(options + Options_ambient_occlusion_property_offset) = 1;
-
-    // Store
-    stored_options = options;
-}
-
-// Smooth Lighting
-static void TileRenderer_tesselateBlockInWorld_injection(unsigned char *tile_renderer, unsigned char *tile, int32_t x, int32_t y, int32_t z) {
-    // Set Variable
-    *Minecraft_useAmbientOcclusion = *(stored_options + Options_ambient_occlusion_property_offset);
-
-    // Call Original Method
-    (*TileRenderer_tesselateBlockInWorld)(tile_renderer, tile, x, y, z);
+    // Server Visible
+    *(options + Options_server_visible_property_offset) = server_visible;
 }
 
 // Init
@@ -81,6 +76,10 @@ void init_options() {
         overwrite((void *) LevelData_getSpawnMobs, (void *) LevelData_getSpawnMobs_injection);
     }
 
+    // Enable Fancy Graphics
+    fancy_graphics = feature_has("Fancy Graphics", server_disabled);
+    // Peaceful Mode
+    peaceful_mode = feature_has("Peaceful Mode", server_auto);
     // 3D Anaglyph
     anaglyph = feature_has("3D Anaglyph", server_disabled);
     // Render Distance
@@ -90,9 +89,11 @@ void init_options() {
 #else
     render_distance = 3;
 #endif
+    // Server Visible
+    server_visible = !feature_has("Disable Hosting LAN Worlds", server_disabled);
 
     // Set Options
-    overwrite_calls((void *) Options_initDefaultValue, (void *) Options_initDefaultValue_injection);
+    overwrite_calls((void *) Minecraft_init, (void *) Minecraft_init_injection);
 
     // Change Username
     const char *username = get_username();
@@ -103,23 +104,26 @@ void init_options() {
         ERR("Default Username Is Invalid");
     }
     patch_address((void *) default_username, (void *) username);
+    unsigned char username_length_patch[4] = {(unsigned char) strlen(username), 0x20, 0xa0, 0xe3}; // "mov r2, #USERNAME_LENGTH"
+    patch((void *) 0x1ba2c, username_length_patch);
 
     // Disable Autojump By Default
     if (feature_has("Disable Autojump By Default", server_disabled)) {
-        unsigned char autojump_patch[4] = {0x00, 0x30, 0xa0, 0xe3}; // "mov r3, #0x0"
-        patch((void *) 0x44b90, autojump_patch);
+        unsigned char autojump_patch[4] = {0x00, 0x00, 0xa0, 0xe3}; // "mov r0, #0x0"
+        patch((void *) 0x5b148, autojump_patch);
     }
     // Display Nametags By Default
     if (feature_has("Display Nametags By Default", server_disabled)) {
         // r6 = 0x1
-        // r5 = 0x0
-        unsigned char display_nametags_patch[4] = {0x1d, 0x60, 0xc0, 0xe5}; // "strb r6, [r0, #0x1d]"
-        patch((void *) 0xa6628, display_nametags_patch);
+        // r12 = 0x0
+        unsigned char display_nametags_patch[4] = {0x1d, 0x60, 0xc4, 0xe5}; // "strb r6, [r4, #0x1d]"
+        patch((void *) 0xf2d44, display_nametags_patch);
     }
 
-    // Smooth Lighting
-    overwrite_calls((void *) TileRenderer_tesselateBlockInWorld, (void *) TileRenderer_tesselateBlockInWorld_injection);
-
-    // Init C++
-    _init_options_cpp();
+    // Enable Smooth Lighting
+    smooth_lighting = feature_has("Smooth Lighting", server_disabled);
+    if (smooth_lighting) {
+        unsigned char smooth_lighting_patch[4] = {0x01, 0x00, 0x53, 0xe3}; // "cmp r3, #0x1"
+        patch((void *) 0x73b74, smooth_lighting_patch);
+    }
 }

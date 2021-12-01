@@ -13,7 +13,6 @@
 #include <media-layer/core.h>
 
 #include "../input/input.h"
-#include "../sign/sign.h"
 #include "../chat/chat.h"
 #include "../home/home.h"
 
@@ -84,18 +83,10 @@ HOOK(SDL_PollEvent, int, (SDL_Event *event)) {
             }
             case SDL_MOUSEBUTTONDOWN:
             case SDL_MOUSEBUTTONUP: {
-                // Track Right-Click State
-                if (event->button.button == SDL_BUTTON_RIGHT) {
-                    input_set_is_right_click(event->button.state != SDL_RELEASED);
-                } else if (event->button.button == SDL_BUTTON_LEFT) {
+                // Track Left-Click State
+                if (event->button.button == SDL_BUTTON_LEFT) {
                     input_set_is_left_click(event->button.state != SDL_RELEASED);
                 }
-                break;
-            }
-            case SDL_USEREVENT: {
-                // SDL_UserEvent Is Never Used In MCPI, So It Is Repurposed For Character Events
-                sign_key_press((char) event->user.code);
-                handled = 1;
                 break;
             }
         }

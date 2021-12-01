@@ -201,12 +201,17 @@ static void GameRenderer_render_injection(unsigned char *game_renderer, float pa
     }
 }
 
+// Stop Checking GL Renderer
+static bool AppPlatform_isPowerVR_injection(__attribute__((unused)) unsigned char *app_platform) {
+    return 0;
+}
+
 // Init
 void init_misc() {
     // Remove Invalid Item Background (A Red Background That Appears For Items That Are Not Included In The gui_blocks Atlas)
     if (feature_has("Remove Invalid Item Background", server_disabled)) {
         unsigned char invalid_item_background_patch[4] = {0x00, 0xf0, 0x20, 0xe3}; // "nop"
-        patch((void *) 0x63c98, invalid_item_background_patch);
+        patch((void *) 0x7f7e8, invalid_item_background_patch);
     }
 
     // Render Selected Item Text + Hide Chat Messages
@@ -223,7 +228,7 @@ void init_misc() {
     overwrite_calls((void *) RakNet_RakString, (void *) RakNet_RakString_injection);
 
     // Print Error Message If RakNet Startup Fails
-    overwrite_call((void *) 0x73778, (void *) RakNetInstance_host_RakNet_RakPeer_Startup_injection);
+    overwrite_call((void *) 0x98014, (void *) RakNetInstance_host_RakNet_RakPeer_Startup_injection);
 
     // Fix Bug Where RakNetInstance Starts Pinging Potential Servers Before The "Join Game" Screen Is Opened
     overwrite_calls((void *) RakNetInstance, (void *) RakNetInstance_injection);
@@ -242,7 +247,7 @@ void init_misc() {
     if (feature_has("Improved Cursor Rendering", server_disabled)) {
         // Disable Normal Cursor Rendering
         unsigned char disable_cursor_patch[4] = {0x00, 0xf0, 0x20, 0xe3}; // "nop"
-        patch((void *) 0x4a6c0, disable_cursor_patch);
+        patch((void *) 0x61afc, disable_cursor_patch);
         // Add Custom Cursor Rendering
         overwrite_calls((void *) GameRenderer_render, (void *) GameRenderer_render_injection);
     }
@@ -251,6 +256,9 @@ void init_misc() {
     if (feature_has("Disable V-Sync", server_disabled)) {
         media_disable_vsync();
     }
+
+    // Stop Checking GL Renderer
+    overwrite((void *) AppPlatform_isPowerVR, (void *) AppPlatform_isPowerVR_injection);
 
     // Init C++ And Logging
     _init_misc_cpp();
